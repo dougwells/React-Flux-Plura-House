@@ -1,6 +1,7 @@
 "use strict";
 
 var React = require('react');
+var Link = require('react-router').Link;
 var AuthorApi = require('../../api/authorApi');
 var AuthorList = require('./authorList');
 
@@ -21,6 +22,7 @@ var AuthorPage = React.createClass({
 			return (
 				<div>
 					<h1>Authors</h1>
+					<Link className="btn btn-lg btn-success" to="author">Manage Author</Link>
 					<AuthorList authors = {this.state.authors}/>
 				</div>
 		);
