@@ -1,6 +1,7 @@
 "use strict";
 
 var React = require('react');
+var Link = require('react-router').Link;
 
 var Home = React.createClass({
 	render: function(){
@@ -10,7 +11,7 @@ var Home = React.createClass({
 					<div className="container">
 						<h1>Pluralsight Administration</h1>
 						<p>React, React Router and Flux for ultraresponsive web apps</p>
-						<button className="btn btn-lg btn-success">More Info</button>
+						<Link to="about" className="btn btn-lg btn-success">More Info</Link>
 					</div>
 				</div>
 			);
