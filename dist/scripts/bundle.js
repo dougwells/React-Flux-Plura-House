@@ -48459,6 +48459,58 @@ module.exports = {
 };
 
 },{}],200:[function(require,module,exports){
+"use strict";
+
+//This file is mocking a web API by hitting hard coded data.
+var authors = require('./authorData').authors;
+var _ = require('lodash');
+
+//This would be performed on the server in a real app. Just stubbing in.
+var _generateId = function(author) {
+	return author.firstName.toLowerCase() + '-' + author.lastName.toLowerCase();
+};
+
+var _clone = function(item) {
+	return JSON.parse(JSON.stringify(item)); //return cloned copy so that the item is passed by value instead of by reference
+};
+
+var AuthorApi = {
+	getAllAuthors: function() {
+		return _clone(authors); 
+	},
+
+	getAuthorById: function(id) {
+		var author = _.find(authors, {id: id});
+		return _clone(author);
+	},
+	
+	saveAuthor: function(author) {
+		//pretend an ajax call to web api is made here
+		console.log('Pretend this just saved the author to the DB via AJAX call...');
+		
+		if (author.id) {
+			var existingAuthorIndex = _.indexOf(authors, _.find(authors, {id: author.id})); 
+			authors.splice(existingAuthorIndex, 1, author);
+		} else {
+			//Just simulating creation here.
+			//The server would generate ids for new authors in a real app.
+			//Cloning so copy returned is passed by value rather than by reference.
+			author.id = _generateId(author);
+			authors.push(author);
+		}
+
+		return _clone(author);
+	},
+
+	deleteAuthor: function(id) {
+		console.log('Pretend this just deleted the author from the DB via an AJAX call...');
+		_.remove(authors, { id: id});
+	}
+};
+
+module.exports = AuthorApi;
+
+},{"./authorData":199,"lodash":3}],201:[function(require,module,exports){
 'use strict';
 var React = require('react');
 
@@ -48505,7 +48557,7 @@ var About = React.createClass({displayName: "About",
 
 module.exports = About;
 
-},{"react":197}],201:[function(require,module,exports){
+},{"react":197}],202:[function(require,module,exports){
 /* eslint-disable strict */ // Disabling check because we can't run strict mode. Need global vars.
 
 var React = require('react');
@@ -48528,7 +48580,7 @@ $ = jQuery = require('jquery');
 
 	module.exports = App;
 
-},{"./common/header":206,"jquery":2,"react":197,"react-router":28}],202:[function(require,module,exports){
+},{"./common/header":207,"jquery":2,"react":197,"react-router":28}],203:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
@@ -48553,8 +48605,7 @@ var AuthorForm = React.createClass({displayName: "AuthorForm",
 					value: this.props.author.lastName, 
 					onChange: this.props.onChange}), 
 				React.createElement("br", null), 
-
-				React.createElement("input", {type: "submit", value: "Save", className: "btn btn-default"})
+				React.createElement("input", {type: "submit", value: "Save", className: "btn btn-default", onClick: this.props.onSave})
 			)
 		);
 	}
@@ -48562,7 +48613,7 @@ var AuthorForm = React.createClass({displayName: "AuthorForm",
 
 module.exports = AuthorForm;
 
-},{"../common/textInput":207,"react":197}],203:[function(require,module,exports){
+},{"../common/textInput":208,"react":197}],204:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
@@ -48601,7 +48652,7 @@ var AuthorList = React.createClass({displayName: "AuthorList",
 
 module.exports = AuthorList;
 
-},{"react":197}],204:[function(require,module,exports){
+},{"react":197}],205:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
@@ -48635,11 +48686,12 @@ var AuthorPage = React.createClass({displayName: "AuthorPage",
 
 module.exports = AuthorPage;
 
-},{"../../api/authorApi":198,"./authorList":203,"react":197,"react-router":28}],205:[function(require,module,exports){
+},{"../../api/authorApi":198,"./authorList":204,"react":197,"react-router":28}],206:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
 var AuthorForm = require('./authorForm');
+var AuthorApi = require('../../api/authorapi');
 
 var manageAuthorPage = React.createClass({displayName: "manageAuthorPage",
 
@@ -48657,10 +48709,16 @@ var manageAuthorPage = React.createClass({displayName: "manageAuthorPage",
 
 	},
 
+	saveAuthor: function(event){
+		event.preventDefault();
+		AuthorApi.saveAuthor(this.state.author);
+	},
+
 	render: function() {
 			return (
 					React.createElement(AuthorForm, {
 					author: this.state.author, 
+					onSave: this.saveAuthor, 
 					onChange: this.setAuthorState})
 			);
 		}	
@@ -48668,7 +48726,7 @@ var manageAuthorPage = React.createClass({displayName: "manageAuthorPage",
 
 module.exports = manageAuthorPage;
 
-},{"./authorForm":202,"react":197}],206:[function(require,module,exports){
+},{"../../api/authorapi":200,"./authorForm":203,"react":197}],207:[function(require,module,exports){
 "use strict";
 var React = require('react');
 var Router = require('react-router');
@@ -48696,7 +48754,7 @@ var Header = React.createClass({displayName: "Header",
 
 module.exports = Header;
 
-},{"react":197,"react-router":28}],207:[function(require,module,exports){
+},{"react":197,"react-router":28}],208:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
@@ -48737,7 +48795,7 @@ var Input = React.createClass({displayName: "Input",
 
 module.exports = Input;
 
-},{"react":197}],208:[function(require,module,exports){
+},{"react":197}],209:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
@@ -48760,7 +48818,7 @@ var Home = React.createClass({displayName: "Home",
 
 module.exports = Home;
 
-},{"react":197,"react-router":28}],209:[function(require,module,exports){
+},{"react":197,"react-router":28}],210:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
@@ -48780,7 +48838,7 @@ var NotFoundPage = React.createClass({displayName: "NotFoundPage",
 
 module.exports = NotFoundPage;
 
-},{"react":197,"react-router":28}],210:[function(require,module,exports){
+},{"react":197,"react-router":28}],211:[function(require,module,exports){
 
 "use strict";
 var React = require('react');
@@ -48792,7 +48850,7 @@ Router.run(routes, function(Handler){
 	React.render(React.createElement(Handler, null), document.getElementById('app'));
 });
 
-},{"./routes":211,"react":197,"react-router":28}],211:[function(require,module,exports){
+},{"./routes":212,"react":197,"react-router":28}],212:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
@@ -48816,4 +48874,4 @@ var routes = (
 
 module.exports = routes;
 
-},{"./components/about/aboutPage":200,"./components/app":201,"./components/authors/authorPage":204,"./components/authors/manageAuthorPage":205,"./components/homePage":208,"./components/notFoundPage":209,"react":197,"react-router":28}]},{},[210]);
+},{"./components/about/aboutPage":201,"./components/app":202,"./components/authors/authorPage":205,"./components/authors/manageAuthorPage":206,"./components/homePage":209,"./components/notFoundPage":210,"react":197,"react-router":28}]},{},[211]);
