@@ -48963,6 +48963,14 @@ var React = require('react');
 var Input = require('../common/textInput');
 
 var AuthorForm = React.createClass({displayName: "AuthorForm",
+
+	propTypes: {
+		author: React.PropTypes.object.isRequired,
+		onSave: React.PropTypes.func.isRequired,
+		onChange: React.PropTypes.func.isRequired,
+		errors: React.PropTypes.object
+	},
+
 	render: function(){
 		return (
 			React.createElement("form", null, 
@@ -49073,8 +49081,8 @@ var AuthorForm = require('./authorForm');
 var AuthorApi = require('../../api/authorapi');
 var toastr = require('toastr');
 
-var manageAuthorPage = React.createClass({displayName: "manageAuthorPage",
 
+var manageAuthorPage = React.createClass({displayName: "manageAuthorPage",
 	mixins: [
 		Router.Navigation
 	],

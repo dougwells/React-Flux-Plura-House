@@ -6,8 +6,8 @@ var AuthorForm = require('./authorForm');
 var AuthorApi = require('../../api/authorapi');
 var toastr = require('toastr');
 
-var manageAuthorPage = React.createClass({
 
+var manageAuthorPage = React.createClass({
 	mixins: [
 		Router.Navigation
 	],
