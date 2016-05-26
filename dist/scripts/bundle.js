@@ -48971,6 +48971,7 @@ var AuthorForm = React.createClass({displayName: "AuthorForm",
 					name: "firstName", 
 					label: "First Name", 
 					value: this.props.author.firstName, 
+					error: this.props.errors.firstName, 
 					onChange: this.props.onChange}), 
 
 				React.createElement("br", null), 
@@ -48979,6 +48980,7 @@ var AuthorForm = React.createClass({displayName: "AuthorForm",
 					name: "lastName", 
 					label: "Last Name", 
 					value: this.props.author.lastName, 
+					error: this.props.errors.lastName, 
 					onChange: this.props.onChange}), 
 				React.createElement("br", null), 
 				React.createElement("input", {type: "submit", value: "Save", className: "btn btn-default", onClick: this.props.onSave})
@@ -49079,7 +49081,8 @@ var manageAuthorPage = React.createClass({displayName: "manageAuthorPage",
 
 	getInitialState: function() {
 		return {
-			author: { id: '', firstName: '', lastName: '' }
+			author: { id: '', firstName: '', lastName: '' },
+			errors: {}
 		};
 	},
 
@@ -49091,11 +49094,29 @@ var manageAuthorPage = React.createClass({displayName: "manageAuthorPage",
 
 	},
 
+	authorFormIsValid: function(){
+		var formIsValid = true;
+		this.state.errors = {};	//clears any previous errors (ie, multiple form submits)
+		if (this.state.author.firstName.length < 3){
+			this.state.errors.firstName = "First Name must be at least 3 characters";
+			formIsValid = false;
+		}
+		if (this.state.author.lastName.length < 3){
+			this.state.errors.lastName = "Last Name must be at least 3 characters";
+			formIsValid = false;
+		}
+		this.setState({errors: this.state.errors});
+		return formIsValid;
+	},
+
 	saveAuthor: function(event){
-		event.preventDefault();
-		AuthorApi.saveAuthor(this.state.author);
-		toastr.success('Author saved.');
-		this.transitionTo('authors');
+			event.preventDefault();
+			if(!this.authorFormIsValid()){
+				return;
+			}
+			AuthorApi.saveAuthor(this.state.author);
+			toastr.success('Author saved.');
+			this.transitionTo('authors');
 	},
 
 	render: function() {
@@ -49103,6 +49124,7 @@ var manageAuthorPage = React.createClass({displayName: "manageAuthorPage",
 					React.createElement(AuthorForm, {
 					author: this.state.author, 
 					onSave: this.saveAuthor, 
+					errors: this.state.errors, 
 					onChange: this.setAuthorState})
 			);
 		}	
