@@ -34,9 +34,16 @@ var AuthorStore = assign({}, EventEmitter.prototype, {   //gives Author Stores p
                                         // .register "catches" Dispatcher.dispatch
 Dispatcher.register(function(action){   //action is the object that authorActions sends (action.actionType, action.author)
   switch(action.actionType){
+
     case ActionTypes.CREATE_AUTHOR:
       _authors.push(action.author);
       AuthorStore.emitChange();
+      break;
+
+    case ActionTypes.INITIALIZE:
+    _authors = action.initialData.authors;
+    AuthorStore.emitChange();
+    break;
 
 
 
