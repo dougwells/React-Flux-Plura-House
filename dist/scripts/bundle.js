@@ -48892,22 +48892,22 @@ var React = require('react');
 
 
 var About = React.createClass({displayName: "About",
-	statics: {
-        willTransitionTo: function(transition, params, query, callback) {
-            if (!confirm('Are you sure you want to read a page that\'s this boring?')) {
-                    transition.abort();
-            } else {
-                callback();
-            }
-        },
-
-        willTransitionFrom: function(transition, component) {
-            if (!confirm('Are you sure you want to leave a page that\'s this exciting?')) {
-                    transition.abort();
-            }
-        }
-
-    },
+	// statics: {
+  //       willTransitionTo: function(transition, params, query, callback) {
+  //           if (!confirm('Are you sure you want to read a page that\'s this boring?')) {
+  //                   transition.abort();
+  //           } else {
+  //               callback();
+  //           }
+  //       },
+	//
+  //       willTransitionFrom: function(transition, component) {
+  //           if (!confirm('Are you sure you want to leave a page that\'s this exciting?')) {
+  //                   transition.abort();
+  //           }
+  //       }
+	//
+  //   },
 
     render: function(){
 		return (
@@ -49014,7 +49014,7 @@ var AuthorList = React.createClass({displayName: "AuthorList",
 		var createAuthorRow = function(author) {
 			return (
 					React.createElement("tr", {key: author.id}, 
-						React.createElement("td", null, React.createElement("a", {href: "/#authors/" + author.id}, author.id)), 
+						React.createElement("td", null, React.createElement("a", {href: "/#author/" + author.id}, author.id)), 
 						React.createElement("td", null, author.firstName, " ", author.lastName)
 					)
 			);
@@ -49099,6 +49099,14 @@ var ManageAuthorPage = React.createClass({displayName: "ManageAuthorPage",
 			dirty: false
 		};
 	},
+
+	componentWillMount: function() {
+	var authorId = this.props.params.id; // from the path '/author:id'
+
+	if (authorId) {
+		this.setState({ author: AuthorApi.getAuthorById(authorId) });
+	}
+},
 
 	setAuthorState: function(e) {
 		this.setState({ dirty: true });
@@ -49293,6 +49301,7 @@ var routes = (
 			React.createElement(Route, {name: "authors", handler: require('./components/authors/authorPage')}), 
 			React.createElement(Route, {name: "about", handler: require('./components/about/aboutPage')}), 
 			React.createElement(Route, {name: "author", path: "/author", handler: require('./components/authors/manageAuthorPage')}), 
+				React.createElement(Route, {name: "manageAuthor", path: "/author/:id", handler: require('./components/authors/manageAuthorPage')}), 
 			React.createElement(NotFoundRoute, {handler: require('./components/notFoundPage')}), 
 			React.createElement(Redirect, {from: "about-us", to: "about"}), 
 			React.createElement(Redirect, {from: "about/*", to: "about"})
