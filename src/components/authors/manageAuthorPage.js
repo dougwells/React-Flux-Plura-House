@@ -6,61 +6,74 @@ var AuthorForm = require('./authorForm');
 var AuthorApi = require('../../api/authorapi');
 var toastr = require('toastr');
 
-
-var manageAuthorPage = React.createClass({
+var ManageAuthorPage = React.createClass({
 	mixins: [
 		Router.Navigation
 	],
-
+	statics: {
+		willTransitionFrom: function(transition, component) {
+			if (component.state.dirty && !confirm('Leave without saving?')) {
+				transition.abort();
+			}
+		}
+	},
 	getInitialState: function() {
 		return {
 			author: { id: '', firstName: '', lastName: '' },
-			errors: {}
+			errors: {},
+			dirty: false
 		};
 	},
 
-	setAuthorState: function(event) {
-		var field = event.target.name;
-		var value = event.target.value;
+	setAuthorState: function(e) {
+		this.setState({ dirty: true });
+		var field = e.target.name;
+		var value = e.target.value;
 		this.state.author[field] = value;
-		return this.setState({author: this.state.author});
 
+		return this.setState({ author: this.state.author });
 	},
 
-	authorFormIsValid: function(){
+	authorFormIsValid: function() {
 		var formIsValid = true;
-		this.state.errors = {};	//clears any previous errors (ie, multiple form submits)
-		if (this.state.author.firstName.length < 3){
-			this.state.errors.firstName = "First Name must be at least 3 characters";
+		this.state.errors = {}; // clear any previous errors.
+
+		if (this.state.author.firstName.length < 3) {
+			this.state.errors.firstName = 'First name must be at least 3 characters.';
 			formIsValid = false;
 		}
-		if (this.state.author.lastName.length < 3){
-			this.state.errors.lastName = "Last Name must be at least 3 characters";
+
+		if (this.state.author.lastName.length < 3) {
+			this.state.errors.lastName = 'Last name must be at least 3 characters.';
 			formIsValid = false;
 		}
-		this.setState({errors: this.state.errors});
+
+		this.setState({ errors: this.state.errors });
 		return formIsValid;
 	},
 
-	saveAuthor: function(event){
-			event.preventDefault();
-			if(!this.authorFormIsValid()){
-				return;
-			}
-			AuthorApi.saveAuthor(this.state.author);
-			toastr.success('Author saved.');
-			this.transitionTo('authors');
+	saveAuthor: function(e) {
+		e.preventDefault();
+
+		if (!this.authorFormIsValid()) {
+			return;
+		}
+
+		AuthorApi.saveAuthor(this.state.author);
+		this.setState({ dirty: false });
+		toastr.success('Author Saved');
+		this.transitionTo('authors');
 	},
 
 	render: function() {
-			return (
-					<AuthorForm 
-					author={this.state.author} 
-					onSave = {this.saveAuthor}
-					errors = {this.state.errors}
-					onChange = {this.setAuthorState}/>
-			);
-		}	
+		return (
+				<AuthorForm
+						author={this.state.author}
+						onChange={this.setAuthorState}
+						onSave={this.saveAuthor}
+						errors={this.state.errors} />
+		);
+	}
 });
 
-module.exports = manageAuthorPage;
+module.exports = ManageAuthorPage;
