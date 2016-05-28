@@ -31,21 +31,36 @@ var AuthorStore = assign({}, EventEmitter.prototype, {   //gives Author Stores p
     return _.find(_authors, {id: id});
   }
 });
-                                        // .register "catches" Dispatcher.dispatch
+
+// .register "catches" Dispatcher.dispatch
 Dispatcher.register(function(action){   //action is the object that authorActions sends (action.actionType, action.author)
   switch(action.actionType){
+
+    case ActionTypes.INITIALIZE:
+      _authors = action.initialData.authors;
+      AuthorStore.emitChange();
+      break;
 
     case ActionTypes.CREATE_AUTHOR:
       _authors.push(action.author);
       AuthorStore.emitChange();
       break;
 
-    case ActionTypes.INITIALIZE:
-    _authors = action.initialData.authors;
-    AuthorStore.emitChange();
-    break;
+    case ActionTypes.UPDATE_AUTHOR:
+      console.log("Author Updated");
+      AuthorStore.emitChange();
+      break;
 
+      case ActionTypes.DELETE_AUTHOR:
+  				_.remove(_authors, function(author) {
+  						return action.id === author.id;
+  				});
+          console.dir(_authors);
+  				AuthorStore.emitChange();
+  				break;
 
+  		default:
+  				// NO OP
 
   }
 });
